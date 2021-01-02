@@ -58,7 +58,7 @@ func main() {
 	stdin := bufio.NewScanner(os.Stdin)
 	stdin.Scan()
 
-	d := newDict(1000000)
+	d := newDict(1046527)
 
 	for stdin.Scan() {
 		t := stdin.Text()
