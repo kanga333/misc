@@ -9,6 +9,8 @@ import (
 	"strings"
 )
 
+var preIndex = 0
+
 type tree struct {
 	id     int
 	parent *tree
@@ -98,39 +100,50 @@ func setTree(id, left, right int, trees []*tree) {
 	}
 }
 
-//  ALDS1_7_C: 木の復元
+func restoreTree(pre, in []int) *tree {
+	if len(in) == 0 {
+		return nil
+	}
+
+	mid := pre[preIndex]
+	preIndex++
+	t := &tree{id: mid}
+
+	j := 0
+	for {
+		if mid == in[j] {
+			break
+		}
+		j++
+	}
+
+	left := restoreTree(pre, in[:j])
+	t.left = left
+	if left != nil {
+		left.parent = t
+	}
+
+	right := restoreTree(pre, in[j+1:])
+	t.right = right
+	if right != nil {
+		right.parent = t
+	}
+
+	return t
+}
+
+//  ALDS1_7_D: 木の復元
 func main() {
 	stdin := bufio.NewScanner(os.Stdin)
 	stdin.Buffer([]byte{}, math.MaxInt64)
-	n := scanInt(stdin)
-	trees := initTrees(n + 1)
-	set := make([]bool, n+1, n+1)
+
+	stdin.Scan() //skip scan n
+
 	pre := scanIntArray(stdin)
-	cuurent := trees[pre[0]] // root
-	set[cuurent.id] = true
 	in := scanIntArray(stdin)
-	j := 1
-	for _, val := range in {
 
-		target := trees[val]
-		for {
-			if set[target.id] {
-				cuurent = target
-				break
-			}
-			cuurent.appendChild(trees[pre[j]])
-			cuurent = trees[pre[j]]
-			set[cuurent.id] = true
-			j++
-		}
-	}
-
-	for _, t := range trees {
-		if t.nodeType() == "root" {
-			fmt.Printf("%s\n", t.postOrder())
-			break
-		}
-	}
+	t := restoreTree(pre, in)
+	fmt.Printf("%s\n", t.postOrder())
 }
 
 func scanInt(sc *bufio.Scanner) int {
