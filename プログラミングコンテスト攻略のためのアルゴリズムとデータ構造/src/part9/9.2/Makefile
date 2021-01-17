@@ -1,0 +1,12 @@
+id = ALDS1_8_A
+base = https://judgedat.u-aizu.ac.jp/testcases
+no = 1
+
+download:
+	mkdir -p cases/$(no)
+	curl -o cases/$(no)/input.txt ${base}/$(id)/$(no)/in
+	curl -o cases/$(no)/output.txt ${base}/$(id)/$(no)/out
+
+test:
+	echo "case $(no)"
+	cat cases/$(no)/input.txt | go run main.go | ~/bin/cliassert -v -stdout-contain "`cat cases/$(no)/output.txt`"

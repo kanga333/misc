@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"io"
 	"math"
 	"os"
 	"strconv"
@@ -50,40 +51,29 @@ func (t *tree) nodeType() string {
 	return "internal node"
 }
 
-func (t *tree) preOrder() string {
-	ret := fmt.Sprintf("%d", t.val)
+func (t *tree) preOrder(w io.Writer) {
+	fmt.Fprintf(w, " %d", t.val)
 	if t.left != nil {
-		ret = fmt.Sprintf("%s %s", ret, t.left.preOrder())
+		t.left.preOrder(w)
 	}
 	if t.right != nil {
-		ret = fmt.Sprintf("%s %s", ret, t.right.preOrder())
+		t.right.preOrder(w)
 	}
 
-	return ret
+	return
 }
 
-func (t *tree) inOrder() string {
-	ret := fmt.Sprintf("%d", t.val)
+func (t *tree) inOrder(w io.Writer) {
 	if t.left != nil {
-		ret = fmt.Sprintf("%s %s", t.left.inOrder(), ret)
+		t.left.inOrder(w)
 	}
+	fmt.Fprintf(w, " %d", t.val)
+
 	if t.right != nil {
-		ret = fmt.Sprintf("%s %s", ret, t.right.inOrder())
+		t.right.inOrder(w)
 	}
 
-	return ret
-}
-
-func (t *tree) postOrder() string {
-	ret := fmt.Sprintf("%d", t.val)
-	if t.right != nil {
-		ret = fmt.Sprintf("%s %s", t.right.postOrder(), ret)
-	}
-	if t.left != nil {
-		ret = fmt.Sprintf("%s %s", t.left.postOrder(), ret)
-	}
-
-	return ret
+	return
 }
 
 func parseTree(s string) *tree {
@@ -119,8 +109,10 @@ func main() {
 			}
 			p.insert(t)
 		case strings.HasPrefix(txt, "print"):
-			fmt.Fprintln(w, "", p.inOrder())
-			fmt.Fprintln(w, "", p.preOrder())
+			p.inOrder(w)
+			fmt.Fprintf(w, "\n")
+			p.preOrder(w)
+			fmt.Fprintf(w, "\n")
 		default:
 			panic(fmt.Sprintf("Unexpected case: %s", txt))
 		}
