@@ -29,6 +29,15 @@ func fib(n int) int {
 	return val
 }
 
+func fib2(n int) int {
+	dp[0] = 1
+	dp[1] = 1
+	for i := 2; i <= n; i++ {
+		dp[i] = dp[i-1] + dp[i-2]
+	}
+	return dp[n]
+}
+
 // ALDS1_10_A: フィボナッチ数列
 func main() {
 	stdin := bufio.NewScanner(os.Stdin)
@@ -37,7 +46,7 @@ func main() {
 	defer w.Flush()
 
 	n := scanInt(stdin)
-	fmt.Fprintf(w, "%d\n", fib(n))
+	fmt.Fprintf(w, "%d\n", fib2(n))
 }
 
 func scanInt(sc *bufio.Scanner) int {
