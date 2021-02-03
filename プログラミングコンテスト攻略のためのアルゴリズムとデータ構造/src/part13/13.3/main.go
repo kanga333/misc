@@ -22,38 +22,23 @@ func dijkstra(n int) []int {
 
 	s := map[int]struct{}{0: {}}
 	for len(adj) != len(s) {
-
-		u := minEdge(s, d)
-		updateNeighbor(d, u)
-	}
-
-	return d
-}
-
-func minEdge(s map[int]struct{}, d []int) int {
-	min := max
-	next := 0
-	for i := range s {
-		for j, w := range adj[i] {
-			_, visited := s[j]
-			weight := w + d[i]
-			if weight < min && !visited {
-				min = weight
-				next = j
+		min := max
+		u := 0
+		for i, w := range d {
+			_, visited := s[i]
+			if w < min && !visited {
+				min = w
+				u = i
+			}
+		}
+		s[u] = struct{}{}
+		for i, w := range adj[u] {
+			if d[u]+w < d[i] {
+				d[i] = d[u] + w
 			}
 		}
 	}
-	s[next] = struct{}{}
-	d[next] = min
-	return next
-}
-
-func updateNeighbor(d []int, u int) {
-	for i, w := range adj[u] {
-		if d[u]+w < d[i] {
-			d[i] = d[u] + w
-		}
-	}
+	return d
 }
 
 // ALDS1_12_B: 単一始点最短経路
