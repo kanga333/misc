@@ -18,6 +18,60 @@ type edge struct {
 	node   int
 }
 
+func swap(h []edge, i, j int) {
+	tmp := h[i]
+	h[i] = h[j]
+	h[j] = tmp
+}
+
+func left(i int) int {
+	return i * 2
+}
+
+func right(i int) int {
+	return i*2 + 1
+}
+
+func parent(i int) int {
+	return i / 2
+}
+
+func maxHepify(h []edge, i int) {
+	l := left(i)
+	r := right(i)
+	size := len(h)
+
+	largest := i
+	if l < size && h[l].weight > h[largest].weight {
+		largest = l
+	}
+	if r < size && h[r].weight > h[largest].weight {
+		largest = r
+	}
+
+	if largest != i {
+		swap(h, largest, i)
+		maxHepify(h, largest)
+	}
+}
+
+func extractMax(h []edge) (edge, []edge) {
+	max := h[1]
+	end := len(h) - 1
+	h[1] = h[end]
+	h = h[:end]
+	maxHepify(h, 1)
+	return max, h
+}
+
+func insert(h []edge, e edge) []edge {
+	i := len(h)
+	h = append(h, e)
+	for ; i > 1 && h[i].weight > h[parent(i)].weight; i = parent(i) {
+		swap(h, i, parent(i))
+	}
+	return h
+}
 
 func dijkstra(n int) []int {
 	d := make([]int, n, n)
@@ -26,22 +80,29 @@ func dijkstra(n int) []int {
 	}
 	d[0] = 0
 
-	s := map[int]struct{}{0: {}}
-	for len(adj) != len(s) {
-		min := max
-		u := 0
-		for i, w := range d {
-			_, visited := s[i]
-			if w < min && !visited {
-				min = w
-				u = i
-			}
-		}
+	h := []edge{{0, 0}, {0, 0}}
+	s := map[int]struct{}{}
+	for len(h) != 1 {
+
+		e := edge{}
+		e, h = extractMax(h)
+
+		u := e.node
 		s[u] = struct{}{}
+		if e.weight*-1 != d[u] {
+			continue
+		}
+
 		for _, e := range adj[u] {
+			_, visited := s[e.node]
+			if visited {
+				continue
+			}
 			if d[u]+e.weight < d[e.node] {
 				d[e.node] = d[u] + e.weight
+				h = insert(h, edge{d[e.node] * -1, e.node})
 			}
+
 		}
 	}
 	return d
