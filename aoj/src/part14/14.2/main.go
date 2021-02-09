@@ -33,7 +33,7 @@ func makeKDTree(l, r, depth int) *node {
 	}
 
 	mid := (l + r) / 2
-	pp := p[l : r-1]
+	pp := p[l:r]
 	if depth%2 == 0 {
 		sort.Slice(pp, func(i, j int) bool {
 			return pp[i].x < pp[j].x
