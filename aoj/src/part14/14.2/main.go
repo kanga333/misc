@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"math"
 	"os"
+	"runtime/pprof"
 	"sort"
 	"strconv"
 	"strings"
@@ -87,6 +88,16 @@ func main() {
 	stdin.Buffer([]byte{}, math.MaxInt64)
 	w := bufio.NewWriter(os.Stdout)
 	defer w.Flush()
+
+	f, err := os.Create("cpu.prof")
+	if err != nil {
+		panic(err)
+	}
+	defer f.Close()
+	if err := pprof.StartCPUProfile(f); err != nil {
+		panic(err)
+	}
+	defer pprof.StopCPUProfile()
 
 	n := scanInt(stdin)
 	p = make([]point, n, n)
