@@ -5,16 +5,18 @@ import (
 	"fmt"
 	"math"
 	"os"
-	"runtime/pprof"
 	"sort"
 	"strconv"
-	"strings"
 )
 
 var (
-	ans []int
-	p   []point
+	ans   []int
+	p     []point
+	nodes []node
+	np    int
 )
+
+var sc = bufio.NewScanner(os.Stdin)
 
 type point struct {
 	id int
@@ -22,99 +24,142 @@ type point struct {
 	y  int
 }
 
-type node struct {
-	location int
-	l        *node
-	r        *node
+type sorterX struct {
+	p   []point
+	len int
 }
 
-func makeKDTree(l, r, depth int) *node {
+func (s sorterX) Len() int {
+	return s.len
+}
+
+func (s sorterX) Swap(i, j int) {
+	tmp := s.p[i]
+	s.p[i] = s.p[j]
+	s.p[j] = tmp
+}
+
+func (s sorterX) Less(i, j int) bool {
+	return s.p[i].x < s.p[j].x
+}
+
+type sorterY struct {
+	p   []point
+	len int
+}
+
+func (s sorterY) Len() int {
+	return s.len
+}
+
+func (s sorterY) Swap(i, j int) {
+	tmp := s.p[i]
+	s.p[i] = s.p[j]
+	s.p[j] = tmp
+}
+
+func (s sorterY) Less(i, j int) bool {
+	return s.p[i].y < s.p[j].y
+}
+
+type node struct {
+	location int
+	l        int
+	r        int
+}
+
+func makeKDTreeX(l, r int) int {
 	if l >= r {
-		return nil
+		return -1
 	}
 
 	mid := (l + r) / 2
-	pp := p[l:r]
-	if depth%2 == 0 {
-		sort.Slice(pp, func(i, j int) bool {
-			return pp[i].x < pp[j].x
-		})
-	} else {
-		sort.Slice(pp, func(i, j int) bool {
-			return pp[i].y < pp[j].y
-		})
+	s := sorterX{
+		p:   p[l:r],
+		len: r - l,
 	}
+	sort.Sort(s)
 
-	n := node{
-		location: mid,
-	}
-	n.l = makeKDTree(l, mid, depth+1)
-	n.r = makeKDTree(mid+1, r, depth+1)
+	t := np
+	np++
+	nodes[t].location = mid
+	nodes[t].l = makeKDTreeY(l, mid)
+	nodes[t].r = makeKDTreeY(mid+1, r)
 
-	return &n
+	return t
 }
 
-func find(n *node, sx, ex, sy, ey, depth int) {
-	if n == nil {
+func makeKDTreeY(l, r int) int {
+	if l >= r {
+		return -1
+	}
+
+	mid := (l + r) / 2
+
+	s := sorterY{
+		p:   p[l:r],
+		len: r - l,
+	}
+	sort.Sort(s)
+
+	t := np
+	np++
+	nodes[t].location = mid
+	nodes[t].l = makeKDTreeX(l, mid)
+	nodes[t].r = makeKDTreeX(mid+1, r)
+
+	return t
+}
+
+func find(t, sx, ex, sy, ey, depth int) {
+	if t == -1 {
 		return
 	}
-	x := p[n.location].x
-	y := p[n.location].y
+	x := p[nodes[t].location].x
+	y := p[nodes[t].location].y
 
 	if sx <= x && x <= ex && sy <= y && y <= ey {
-		ans = append(ans, p[n.location].id)
+		ans = append(ans, p[nodes[t].location].id)
 	}
 
 	if depth%2 == 0 {
 		if sx <= x {
-			find(n.l, sx, ex, sy, ey, depth+1)
+			find(nodes[t].l, sx, ex, sy, ey, depth+1)
 		}
 		if x <= ex {
-			find(n.r, sx, ex, sy, ey, depth+1)
+			find(nodes[t].r, sx, ex, sy, ey, depth+1)
 		}
 	} else {
 		if sy <= y {
-			find(n.l, sx, ex, sy, ey, depth+1)
+			find(nodes[t].l, sx, ex, sy, ey, depth+1)
 		}
 		if y <= ey {
-			find(n.r, sx, ex, sy, ey, depth+1)
+			find(nodes[t].r, sx, ex, sy, ey, depth+1)
 		}
 	}
 }
 
 // DSL_2_C: 領域探索
 func main() {
-	stdin := bufio.NewScanner(os.Stdin)
-	stdin.Buffer([]byte{}, math.MaxInt64)
+	sc.Buffer([]byte{}, math.MaxInt64)
+	sc.Split(bufio.ScanWords)
 	w := bufio.NewWriter(os.Stdout)
 	defer w.Flush()
 
-	f, err := os.Create("cpu.prof")
-	if err != nil {
-		panic(err)
-	}
-	defer f.Close()
-	if err := pprof.StartCPUProfile(f); err != nil {
-		panic(err)
-	}
-	defer pprof.StopCPUProfile()
-
-	n := scanInt(stdin)
+	n := nextInt()
 	p = make([]point, n, n)
+	nodes = make([]node, n, n)
 	for i := 0; i < n; i++ {
-		a := scanIntArray(stdin)
-		p[i] = point{
-			id: i,
-			x:  a[0],
-			y:  a[1],
-		}
+		p[i].id = i
+		p[i].x = nextInt()
+		p[i].y = nextInt()
 	}
-	tree := makeKDTree(0, n, 0)
-	q := scanInt(stdin)
+	tree := makeKDTreeX(0, n)
+
+	q := nextInt()
 	for i := 0; i < q; i++ {
 		ans = []int{}
-		a := scanIntArray(stdin)
-		find(tree, a[0], a[1], a[2], a[3], 0)
+		find(tree, nextInt(), nextInt(), nextInt(), nextInt(), 0)
 		sort.Ints(ans)
 		for _, v := range ans {
 			fmt.Fprintln(w, v)
@@ -123,28 +168,13 @@ func main() {
 	}
 }
 
-func scanInt(sc *bufio.Scanner) int {
+func next() string {
 	sc.Scan()
-	t := sc.Text()
-	i, err := strconv.Atoi(t)
-	if err != nil {
-		panic(err)
-	}
-	return i
+	return sc.Text()
 }
 
-func scanIntArray(sc *bufio.Scanner) []int {
-	sc.Scan()
-	t := sc.Text()
-
-	ss := strings.Split(t, " ")
-	is := []int{}
-	for _, s := range ss {
-		i, err := strconv.Atoi(s)
-		if err != nil {
-			panic(err)
-		}
-		is = append(is, i)
-	}
-	return is
+func nextInt() int {
+	s := next()
+	i, _ := strconv.Atoi(s)
+	return i
 }
