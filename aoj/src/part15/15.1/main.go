@@ -8,10 +8,10 @@ import (
 	"strconv"
 )
 
-const INF = 20000001
+const INF = math.MaxInt64
 
 var sc = bufio.NewScanner(os.Stdin)
-var adj [][]int
+var adj [][]int64
 
 // GRL_1_C: 全点対間最短経路
 func main() {
@@ -23,9 +23,9 @@ func main() {
 	v := nextInt()
 	e := nextInt()
 
-	adj = make([][]int, v, v)
+	adj = make([][]int64, v, v)
 	for i := 0; i < v; i++ {
-		adj[i] = make([]int, v, v)
+		adj[i] = make([]int64, v, v)
 		for j := range adj[i] {
 			if i != j {
 				adj[i][j] = INF
@@ -37,12 +37,12 @@ func main() {
 		src := nextInt()
 		dst := nextInt()
 		weight := nextInt()
-		adj[src][dst] = weight
+		adj[src][dst] = int64(weight)
 	}
 	warsdhallFloyd(v)
 	if negative(v) {
 		fmt.Fprintln(w, "NEGATIVE CYCLE")
-		os.Exit(0)
+		return
 	}
 	for i := 0; i < v; i++ {
 		if adj[i][0] == INF {
@@ -69,6 +69,9 @@ func warsdhallFloyd(v int) {
 				continue
 			}
 			for j := 0; j < v; j++ {
+				if adj[k][j] == INF {
+					continue
+				}
 				r := adj[i][k] + adj[k][j]
 				if r < adj[i][j] {
 					adj[i][j] = r
