@@ -1,2 +1,3 @@
-# codes
-transcribe a book
+# competition-programming-practice
+
+Competition programming practice
