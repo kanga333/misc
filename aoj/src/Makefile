@@ -25,4 +25,4 @@ test: download
 .PHONY: open
 open:
 	cat $(id)/main.go | pbcopy
-	open http://judge.u-aizu.ac.jp/onlinejudge/submission.jsp#submit/$(id)
+	open -a Safari http://judge.u-aizu.ac.jp/onlinejudge/submission.jsp#submit/$(id)
