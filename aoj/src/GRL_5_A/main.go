@@ -9,28 +9,28 @@ import (
 )
 
 var sc = bufio.NewScanner(os.Stdin)
-var adj [][]node
+var adj [][]edge
 
 func dfs(current int, weight int, visited []bool) (int, int) {
 	max := weight
-	dest := current
+	dst := current
 	visited[current] = true
 
-	for _, n := range adj[current] {
-		if visited[n.dest] {
+	for _, e := range adj[current] {
+		if visited[e.dst] {
 			continue
 		}
-		ret, d := dfs(n.dest, weight+int(n.weight), visited)
-		if ret > max {
-			max = ret
-			dest = d
+		w, d := dfs(e.dst, weight+int(e.weight), visited)
+		if w > max {
+			max = w
+			dst = d
 		}
 	}
-	return max, dest
+	return max, dst
 }
 
-type node struct {
-	dest   int
+type edge struct {
+	dst    int
 	weight int16
 }
 
@@ -42,30 +42,28 @@ func main() {
 	defer w.Flush()
 
 	n := nextInt()
-	adj = make([][]node, n, n)
 
+	adj = make([][]edge, n, n)
 	for i := 0; i < n; i++ {
-		adj[i] = make([]node, 0, 0)
+		adj[i] = make([]edge, 0, 0)
 	}
 	for i := 0; i < n; i++ {
 		src := nextInt()
 		dst := nextInt()
 		weight := int16(nextInt())
-		adj[src] = append(adj[src], node{
-			dest:   dst,
+		adj[src] = append(adj[src], edge{
+			dst:    dst,
 			weight: weight,
 		})
-		adj[dst] = append(adj[dst], node{
-			dest:   src,
+		adj[dst] = append(adj[dst], edge{
+			dst:    src,
 			weight: weight,
 		})
 
 	}
-	visited := make([]bool, n, n)
-	_, edge := dfs(0, 0, visited)
-	visited = make([]bool, n, n)
-	ans, _ := dfs(edge, 0, visited)
-	fmt.Fprintln(w, ans)
+	_, d := dfs(0, 0, make([]bool, n, n))
+	weight, _ := dfs(d, 0, make([]bool, n, n))
+	fmt.Fprintln(w, weight)
 }
 
 func next() string {
