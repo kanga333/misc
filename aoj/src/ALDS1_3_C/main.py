@@ -1,11 +1,13 @@
+from collections import deque
+
 # ALDS1_3_C: 連結リスト
 def main():
-    l = []
+    l = deque()
     n = int(input())
     for i in range(0, n):
         cmd = input()
         if cmd == "deleteFirst":
-            _ = l.pop(0)
+            _ = l.popleft()
             continue
         if cmd == "deleteLast":
             _ = l.pop()
@@ -13,15 +15,15 @@ def main():
         splited = cmd.split(" ")
         target = splited[1]
         if splited[0] == "delete":
-            for i, v in enumerate(l):
-                if target == v:
-                    _ = l.pop(i)
-                    break
+            try:
+                l.remove(target)
+            except ValueError:
+                pass
             continue
         # insert
-        l.insert(0, target)
+        l.appendleft(target)
     
-    print(" ".join(l))
+    print(" ".join(list(l)))
 
 if __name__ == '__main__':
     main()
