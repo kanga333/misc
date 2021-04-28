@@ -1,83 +1,54 @@
+from sys import stdin
+
+def link_node(earlier, later):
+    earlier.next = later
+    later.prev = earlier
+
 class Node:
     def __init__(self, key):
         self.key = key
-        self.prev = None
-        self.next = None
-    
-    def set_next(self, x):
-        self.next = x
-    
-    def set_prev(self, x):
-        self.prev = x
-
-
-class NodeQueue:
+        self.prev = self
+        self.next = self
+class LinkedList:
     def __init__(self):
-        self.first = None
-        self.last = None
+        self.first = Node("-1")
+        self.last = Node("-1")
+        link_node(self.first, self.last)
     
     def delete_first(self):
-        if self.first:
-            next = self.first.next
-            if next:
-                next.set_prev(None)
-            self.first = next
-        
-        if self.first == None:
-            self.last = None
+        link_node(self.first, self.first.next.next)
     
     def delete_last(self):
-        if self.last:
-            prev = self.last.prev
-            if prev:
-                prev.set_next(None)
-            self.last = prev
-        
-        if self.last == None:
-            self.first = None
+        link_node(self.last.prev.prev, self.last)
     
     def insert(self, x):
         n = Node(x)
-        n.set_next(self.first)
-        if self.first:
-            self.first.set_prev(n)
-        self.first = n
-
-        if self.last == None:
-            self.last = n
+        link_node(n ,self.first.next)
+        link_node(self.first ,n)
     
     def delete(self, x):
-        node = self.first
-        while node != None:
+        node = self.first.next
+        while node.key != "-1":
             key = node.key
             if key == x:
-                prev = node.prev
-                next = node.next
-                if prev:
-                    prev.set_next(next)
-                else:
-                    self.first = next
-                if next:
-                    next.set_prev(prev)
-                else:
-                    self.last = prev
+                link_node(node.prev, node.next)
                 break
             node = node.next
     
-    def print(self):
-        node = self.first
+    def result(self):
+        node = self.first.next
         result = []
-        while node != None:
+        while node.key != "-1":
             result.append(node.key)
             node = node.next
-        print(" ".join(result))
+        return " ".join(result)
 
 # ALDS1_3_C: 連結リスト
 def main():
-    l = NodeQueue()
+    l = LinkedList()
     n = int(input())
-    for i in range(0, n):
-        cmd = input()
+    for _ in range(0, n):
+        cmd = stdin.readline().strip()
         if cmd == "deleteFirst":
             l.delete_first()
             continue
@@ -92,7 +63,7 @@ def main():
         # insert
         l.insert(target)
     
-    l.print()
+    print(l.result())
 
 if __name__ == '__main__':
     main()
