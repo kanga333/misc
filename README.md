@@ -1,3 +1,3 @@
-# competition-programming-practice
+# misc
 
-Competition programming practice
+There's some miscellaneous code here.
