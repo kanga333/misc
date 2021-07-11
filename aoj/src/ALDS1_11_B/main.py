@@ -26,29 +26,25 @@ class DFS:
         self.g = g
         self.stuck = []
         self.visited = [ False for _ in range(self.g.n + 1)]
-        self.t = 1
+        self.t = 0
         self.start = {}
         self.end = {}
     
     def do(self):
-        self.start[1] = self.t
-        self.stuck.append(1)
-        self.visited[1] = True
-
-        while(self.stuck != []):
-            self.t += 1
-            id = self.stuck.pop()
-            list = self.g.get_linked_list(id)
-            if self.visit(id, list):
-                self.end[id] = self.t
-            if self.stuck == []:
-                for i, v in enumerate(self.visited[1:], 1):
+        while(False in self.visited[1:]):
+            for i, v in enumerate(self.visited[1:], 1):
                     if v == False:
+                        self.t += 1
                         self.stuck.append(i)
                         self.visited[i] = True
-                        self.t += 1
                         self.start[i] = self.t
                         break
+            while(self.stuck != []):
+                self.t += 1
+                id = self.stuck.pop()
+                list = self.g.get_linked_list(id)
+                if self.visit(id, list):
+                    self.end[id] = self.t
         for i in range(1, self.g.n + 1):
             print(i, self.start[i], self.end[i]) 
     
@@ -63,7 +59,7 @@ class DFS:
             return False
         return True
 
-# ALDS1_11_B: 深さ優先探索 :TODO リファクタ
+# ALDS1_11_B: 深さ優先探索
 def main():
     n = int(input())
     g = Graph(n)
