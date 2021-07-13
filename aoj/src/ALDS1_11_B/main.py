@@ -31,33 +31,27 @@ class DFS:
         self.end = {}
     
     def do(self):
-        while(False in self.visited[1:]):
-            for i, v in enumerate(self.visited[1:], 1):
-                    if v == False:
-                        self.t += 1
-                        self.stuck.append(i)
-                        self.visited[i] = True
-                        self.start[i] = self.t
-                        break
-            while(self.stuck != []):
-                self.t += 1
-                id = self.stuck.pop()
-                list = self.g.get_linked_list(id)
-                if self.visit(id, list):
-                    self.end[id] = self.t
+        for i in range(1, self.g.n + 1):
+            if self.visited[i]:
+                continue
+            self.t += 1
+            self.visited[i] = True
+            self.start[i] = self.t
+            self.visit(i)
         for i in range(1, self.g.n + 1):
             print(i, self.start[i], self.end[i]) 
     
-    def visit(self, id, list):
+    def visit(self, id):
+        list = self.g.get_linked_list(id)
         for v in list:
             if self.visited[v]:
                 continue
+            self.t += 1
             self.visited[v] = True
             self.start[v] = self.t
-            self.stuck.append(id)
-            self.stuck.append(v)
-            return False
-        return True
+            self.visit(v)
+        self.t += 1
+        self.end[id] = self.t
 
 # ALDS1_11_B: 深さ優先探索
 def main():
