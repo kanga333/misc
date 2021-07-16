@@ -19,7 +19,15 @@ class DFS:
             if self.visited[i] != -1:
                 continue
             self.visited[i] = i
-            self.visit(i, i)
+            self.stuck.append((i, i))
+            while(self.stuck != []):
+                id, root = self.stuck.pop(0)
+                list = self.g.linked_list[id]
+                for i in list:
+                    if self.visited[i] != -1:
+                        continue
+                    self.visited[i] = root
+                    self.stuck.append((i, root))
     
     def visit(self, id, root):
         list = self.g.linked_list[id]
