@@ -1,3 +1,4 @@
+from heapq import heappush, heappop
 MAX_WEIGHT = 2001
 
 # ALDS1_12_A: 最小全域木
@@ -9,17 +10,20 @@ def main():
         adj.append(edge)
     t = set({0})
     total = 0
+    next = 0
+    hq = []
     while(len(t) != n):
+        for i, v in enumerate(adj[next]):
+            if i in t:
+                continue
+            heappush(hq, (v, i))
         shortest = MAX_WEIGHT
-        next = 0
-        # TODO: 2分木で高速化できる
-        for d in t:
-            for i, v in enumerate(adj[d]):
-                if i in t:
-                    continue
-                if v < shortest:
-                    shortest = v
-                    next = i
+        for _ in range(len(hq)):
+            v, i = heappop(hq)
+            if not i in t:
+                shortest = v
+                next = i
+                break
         total += shortest
         t.add(next)
     print(total)
