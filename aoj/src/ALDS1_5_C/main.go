@@ -59,7 +59,7 @@ func main() {
 		x: 100.0,
 		y: 0.0,
 	}
-	fmt.Printf("%f %f\n", p1.x, p1.y)
+	fmt.Printf('{:.3f}'.format(p1.x), , p1.y)
 	koch(&p1, &p2, n)
 	fmt.Printf("%f %f\n", p2.x, p2.y)
 }
