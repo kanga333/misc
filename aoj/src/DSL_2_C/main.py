@@ -1,3 +1,4 @@
+from sys import stdin
 import math
 
 class Point:
@@ -55,17 +56,18 @@ class KDTree:
 
 # DSL_2_C: 領域探索
 def main():
+    readline = stdin.readline
     n = int(input())
     points = []
     for i in range(n):
-        xy = [int(v) for v in input().split(" ")]
-        points.append(Point(i, xy[0], xy[1]))
+        x, y = map(int, readline().split())
+        points.append(Point(i, x, y))
     tree = KDTree(points)
     node = tree.makeX(0, n)
     q = int(input())
     for _ in range(q):
-        line = [int(v) for v in input().split(" ")]
-        ans = node.find(line[0],line[1],line[2],line[3],0)
+        sx, ex, sy, ey = map(int, readline().split())
+        ans = node.find(sx, ex, sy, ey, 0)
         ans.sort()
         for v in ans:
             print(v)
