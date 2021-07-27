@@ -1,12 +1,6 @@
 from sys import stdin
 import math
 
-class Point:
-    def __init__(self, id, x, y) -> None:
-        self.id = id
-        self.x = x
-        self.y = y
-
 class Node:
     def __init__(self, loc, left, right) -> None:
         self.loc = loc
@@ -16,12 +10,12 @@ class Node:
     def find(self, sx, ex, sy, ey, depth):
         if self.loc == None:
             return []
-        x = self.loc.x
-        y = self.loc.y
+        x = self.loc[1]
+        y = self.loc[2]
 
         ans = []
         if sx <= x and x <= ex and sy <= y and y <= ey:
-            ans.append(self.loc.id)
+            ans.append(self.loc[0])
         
         if depth%2 == 0:
             if sx <= x:
@@ -43,7 +37,7 @@ class KDTree:
             return Node(None, None, None)
         
         mid = math.floor((l + r) / 2)
-        self.points[l:r] = sorted(self.points[l:r],key=lambda x:x.x)
+        self.points[l:r] = sorted(self.points[l:r],key=lambda x:x[1])
         return Node(self.points[mid], self.makeY(l, mid), self.makeY(mid+1, r))
 
     def makeY(self, l, r):
@@ -51,7 +45,7 @@ class KDTree:
             return Node(None, None, None)
         
         mid = math.floor((l + r) / 2)
-        self.points[l:r] = sorted(self.points[l:r],key=lambda x:x.y)
+        self.points[l:r] = sorted(self.points[l:r],key=lambda x:x[2])
         return Node(self.points[mid], self.makeX(l, mid), self.makeX(mid+1, r))
 
 # DSL_2_C: 領域探索
@@ -61,7 +55,7 @@ def main():
     points = []
     for i in range(n):
         x, y = map(int, readline().split())
-        points.append(Point(i, x, y))
+        points.append((i, x, y))
     tree = KDTree(points)
     node = tree.makeX(0, n)
     q = int(input())
