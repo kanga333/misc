@@ -1,5 +1,4 @@
 from sys import stdin
-import math
 
 class Node:
     def __init__(self, loc, left, right) -> None:
@@ -36,7 +35,7 @@ class KDTree:
         if l >= r:
             return Node(None, None, None)
         
-        mid = math.floor((l + r) / 2)
+        mid = int((l + r) / 2)
         self.points[l:r] = sorted(self.points[l:r],key=lambda x:x[1])
         return Node(self.points[mid], self.makeY(l, mid), self.makeY(mid+1, r))
 
@@ -44,7 +43,7 @@ class KDTree:
         if l >= r:
             return Node(None, None, None)
         
-        mid = math.floor((l + r) / 2)
+        mid = int((l + r) / 2)
         self.points[l:r] = sorted(self.points[l:r],key=lambda x:x[2])
         return Node(self.points[mid], self.makeX(l, mid), self.makeX(mid+1, r))
 
@@ -63,8 +62,8 @@ def main():
         sx, ex, sy, ey = map(int, readline().split())
         ans = node.find(sx, ex, sy, ey, 0)
         ans.sort()
-        for v in ans:
-            print(v)
+        if len(ans) != 0:
+            print(*ans, sep='\n')
         print()
     
 if __name__ == "__main__":
