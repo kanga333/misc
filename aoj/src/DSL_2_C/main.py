@@ -4,6 +4,7 @@ class KDTree:
         self.points = points
         self.nodes = nodes
         self.np = 0
+        self.ans = []
     
     def makeX(self, l, r):
         if l >= r:
@@ -33,25 +34,24 @@ class KDTree:
     
     def find(self, t, sx, ex, sy, ey, depth):
         if t == -1:
-            return []
+            return
         x = self.points[self.nodes[t][0]][1]
         y = self.points[self.nodes[t][0]][2]
 
-        ans = []
         if sx <= x and x <= ex and sy <= y and y <= ey:
-            ans.append(self.points[self.nodes[t][0]][0])
+            self.ans.append(self.points[self.nodes[t][0]][0])
         
         if depth%2 == 0:
             if sx <= x:
-                ans.extend(self.find(self.nodes[t][1],sx, ex, sy, ey, depth+1))
+                self.find(self.nodes[t][1],sx, ex, sy, ey, depth+1)
             if x <= ex:
-                ans.extend(self.find(self.nodes[t][2],sx, ex, sy, ey, depth+1))
+                self.find(self.nodes[t][2],sx, ex, sy, ey, depth+1)
         else:
             if sy <= y:
-                ans.extend(self.find(self.nodes[t][1],sx, ex, sy, ey, depth+1))
+                self.find(self.nodes[t][1],sx, ex, sy, ey, depth+1)
             if y <= ey:
-                ans.extend(self.find(self.nodes[t][2],sx, ex, sy, ey, depth+1))
-        return ans
+                self.find(self.nodes[t][2],sx, ex, sy, ey, depth+1)
+        return
 
 # DSL_2_C: 領域探索
 def main():
@@ -67,11 +67,12 @@ def main():
     q = int(input())
     for _ in range(q):
         sx, ex, sy, ey = map(int, readline().split())
-        ans = tree.find(0, sx, ex, sy, ey, 0)
-        ans.sort()
-        if len(ans) != 0:
-            print(*ans, sep='\n')
+        tree.find(0, sx, ex, sy, ey, 0)
+        tree.ans.sort()
+        if len(tree.ans) != 0:
+            print(*tree.ans, sep='\n')
         print()
-    
+        tree.ans = []
+
 if __name__ == "__main__":
     main()
