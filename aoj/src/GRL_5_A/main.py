@@ -1,4 +1,4 @@
-from sys import stdin
+import sys
 
 class resolver:
     def __init__(self, adj):
@@ -26,7 +26,8 @@ class resolver:
 
 # GRL_5_A: 木の直径
 def main():
-    readline = stdin.readline
+    sys.setrecursionlimit(50000)
+    readline = sys.stdin.readline
     n = int(input())
     adj = [[] for _ in range(n)]
     for _ in range(n-1):
