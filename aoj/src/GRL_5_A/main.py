@@ -4,29 +4,30 @@ class resolver:
     def __init__(self, adj):
         self.adj = adj
 
-    def farthest(self, i, d, visited):
-        visited.add(i)
-        t = i
-        w = 0
-        for t2, w2 in self.adj[i]:
-            if not t2 in visited:
-                t3, w3 = self.farthest(t2, d+w2, visited)
-                if w < w3:
-                    w = w3
-                    t = t3
-        if w == 0:
-            return i, d
-        else:
-            return t, w
+    def farthest(self, i):
+        next = [(i, 0)]
+        visited = set([i])
+        at = i
+        aw = 0
+        while(len(next) != 0):
+            i, tw = next.pop(0)
+            for t, pw in self.adj[i]:
+                if not t in visited:
+                    nw = tw +pw
+                    visited.add(t)
+                    next.append((t, nw))
+                    if aw < nw:
+                        aw = nw
+                        at = t
+        return at, aw
 
     def resolve(self):
-        s, _ = self.farthest(0, 0, set())
-        _, w = self.farthest(s, 0, set())
+        s, _ = self.farthest(0)
+        _, w = self.farthest(s)
         print(w)
 
 # GRL_5_A: 木の直径
 def main():
-    sys.setrecursionlimit(50000)
     readline = sys.stdin.readline
     n = int(input())
     adj = [[] for _ in range(n)]
