@@ -13,12 +13,12 @@ class Resolver:
         self.dfs(0, 0)
         ret = []
         np = False
-        for i in range(len(self.adj)):
+        for i in range(1, len(self.adj)):
             p = self.parent[i]
             if p == 0:
                 np = True
             else:
-                if self.pre[p] <= self.lowest[p]:
+                if self.pre[p] <= self.lowest[i]:
                     ret.append(p)
         if np:
             ret.append(0)
